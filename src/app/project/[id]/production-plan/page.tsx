@@ -1,5 +1,5 @@
 import { createServerSupabaseClient } from '@/lib/db/supabase-server'
-import { ProductionPlanView } from '@/components/project/production-plan-view'
+import { CreativeBriefView } from '@/components/project/production-plan-view'
 
 export default async function ProductionPlanPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
@@ -20,5 +20,5 @@ export default async function ProductionPlanPage({ params }: { params: Promise<{
     .eq('is_active', true)
     .single()
 
-  return <ProductionPlanView projectId={id} plan={plan} hasScreenplay={!!script} />
+  return <CreativeBriefView projectId={id} plan={plan} hasScreenplay={!!script} />
 }

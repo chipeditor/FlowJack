@@ -3,7 +3,10 @@ import { createServerSupabaseClient } from '@/lib/db/supabase-server'
 import { generate } from '@/lib/ai/generate'
 import { buildProductionPlanPrompt } from '@/lib/ai/prompts/production-plan'
 
+export const maxDuration = 120
+
 export async function POST(request: NextRequest) {
+  try {
   const supabase = await createServerSupabaseClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -74,7 +77,7 @@ export async function POST(request: NextRequest) {
   await supabase.from('ai_generations').insert({
     project_id: projectId,
     user_id: user.id,
-    generation_type: 'production_plan',
+    generation_type: 'creative_brief',
     provider: result.provider,
     model: result.model,
     input_prompt: prompt,
@@ -85,4 +88,8 @@ export async function POST(request: NextRequest) {
   })
 
   return NextResponse.json({ plan })
+  } catch (error) {
+    console.error('Production plan generation error:', error)
+    return NextResponse.json({ error: 'Generation failed' }, { status: 500 })
+  }
 }

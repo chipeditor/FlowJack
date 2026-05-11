@@ -12,6 +12,7 @@ import {
   Camera,
   Image,
   ClipboardList,
+  Palette,
   CheckCircle2,
   Circle,
   ArrowRight,
@@ -22,26 +23,34 @@ interface ProjectOverviewProps {
   hasScreenplay: boolean
   sceneCount: number
   shotCount: number
+  hasCreativeBrief: boolean
+  hasShootPlan: boolean
 }
 
-export function ProjectOverview({ project, hasScreenplay, sceneCount, shotCount }: ProjectOverviewProps) {
+export function ProjectOverview({ project, hasScreenplay, sceneCount, shotCount, hasCreativeBrief, hasShootPlan }: ProjectOverviewProps) {
   const router = useRouter()
   const [generating, setGenerating] = useState(false)
 
+  const isScreenplayLocked = !!(project.metadata as Record<string, unknown>)?.screenplay_locked
+
   const pipeline = [
     { name: 'Logline', done: !!project.logline, icon: Sparkles, href: '' },
-    { name: 'Screenplay', done: hasScreenplay, icon: FileText, href: `/project/${project.id}/screenplay` },
-    { name: 'Scene Breakdown', done: sceneCount > 0, icon: Layers, href: `/project/${project.id}/scenes` },
+    { name: 'Screenplay', done: hasScreenplay, icon: FileText, href: `/project/${project.id}/screenplay`, subtitle: hasScreenplay ? (isScreenplayLocked ? 'Locked' : 'Draft — needs review') : undefined },
+    { name: 'Creative Brief', done: hasCreativeBrief, icon: Palette, href: `/project/${project.id}/production-plan` },
+    { name: 'Scene Breakdown', done: sceneCount > 0, icon: Layers, href: `/project/${project.id}/scenes`, blocked: hasScreenplay && !isScreenplayLocked },
     { name: 'Shot List', done: shotCount > 0, icon: Camera, href: `/project/${project.id}/shots` },
     { name: 'Storyboard', done: false, icon: Image, href: `/project/${project.id}/storyboard` },
-    { name: 'Production Plan', done: false, icon: ClipboardList, href: `/project/${project.id}/production-plan` },
+    { name: 'Production Plan', done: hasShootPlan, icon: ClipboardList, href: `/project/${project.id}/shoot-plan` },
   ]
 
   const completedSteps = pipeline.filter((s) => s.done).length
   const nextStep = pipeline.find((s) => !s.done)
 
+  const [error, setError] = useState<string | null>(null)
+
   async function handleGenerateLogline() {
     setGenerating(true)
+    setError(null)
     try {
       const res = await fetch('/api/ai/generate-logline', {
         method: 'POST',
@@ -50,7 +59,12 @@ export function ProjectOverview({ project, hasScreenplay, sceneCount, shotCount 
       })
       if (res.ok) {
         router.refresh()
+      } else {
+        const data = await res.json().catch(() => ({}))
+        setError(data.error || `Generation failed (${res.status})`)
       }
+    } catch {
+      setError('Network error — could not reach the server')
     } finally {
       setGenerating(false)
     }
@@ -74,6 +88,9 @@ export function ProjectOverview({ project, hasScreenplay, sceneCount, shotCount 
               <Sparkles className="w-3.5 h-3.5" />
               Generate Logline
             </Button>
+            {error && (
+              <p className="mt-2 text-xs text-red-400">{error}</p>
+            )}
           </div>
         )}
       </div>

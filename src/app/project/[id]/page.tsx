@@ -30,12 +30,24 @@ export default async function ProjectPage({ params }: { params: Promise<{ id: st
     .select('*', { count: 'exact', head: true })
     .eq('project_id', id)
 
+  const { count: creativeBriefCount } = await supabase
+    .from('production_plans')
+    .select('*', { count: 'exact', head: true })
+    .eq('project_id', id)
+
+  const { count: shootPlanCount } = await supabase
+    .from('shoot_plans')
+    .select('*', { count: 'exact', head: true })
+    .eq('project_id', id)
+
   return (
     <ProjectOverview
       project={project}
       hasScreenplay={!!scripts && scripts.length > 0}
       sceneCount={sceneCount || 0}
       shotCount={shotCount || 0}
+      hasCreativeBrief={(creativeBriefCount || 0) > 0}
+      hasShootPlan={(shootPlanCount || 0) > 0}
     />
   )
 }

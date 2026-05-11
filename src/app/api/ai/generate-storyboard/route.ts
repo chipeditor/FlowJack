@@ -3,7 +3,10 @@ import { createServerSupabaseClient } from '@/lib/db/supabase-server'
 import { generate } from '@/lib/ai/generate'
 import { buildStoryboardPrompt } from '@/lib/ai/prompts/storyboard'
 
+export const maxDuration = 120
+
 export async function POST(request: NextRequest) {
+  try {
   const supabase = await createServerSupabaseClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -83,4 +86,8 @@ export async function POST(request: NextRequest) {
   })
 
   return NextResponse.json({ storyboard })
+  } catch (error) {
+    console.error('Storyboard generation error:', error)
+    return NextResponse.json({ error: 'Generation failed' }, { status: 500 })
+  }
 }

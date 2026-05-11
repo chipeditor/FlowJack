@@ -6,13 +6,13 @@ import { ProductionPlan } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import { Sparkles, ClipboardList, Music, Mic, Palette, Film } from 'lucide-react'
 
-interface ProductionPlanViewProps {
+interface CreativeBriefViewProps {
   projectId: string
   plan: ProductionPlan | null
   hasScreenplay: boolean
 }
 
-export function ProductionPlanView({ projectId, plan, hasScreenplay }: ProductionPlanViewProps) {
+export function CreativeBriefView({ projectId, plan, hasScreenplay }: CreativeBriefViewProps) {
   const router = useRouter()
   const [generating, setGenerating] = useState(false)
 
@@ -35,18 +35,18 @@ export function ProductionPlanView({ projectId, plan, hasScreenplay }: Productio
   if (!plan) {
     return (
       <div className="space-y-6">
-        <h1 className="text-2xl font-display font-semibold text-text-primary">Production Plan</h1>
+        <h1 className="text-2xl font-display font-semibold text-text-primary">Creative Brief</h1>
         <div className="panel p-8 text-center">
           <ClipboardList className="w-10 h-10 text-text-tertiary mx-auto mb-3" />
           {hasScreenplay ? (
             <>
-              <h2 className="text-lg font-medium text-text-primary mb-2">Generate Production Plan</h2>
+              <h2 className="text-lg font-medium text-text-primary mb-2">Generate Creative Brief</h2>
               <p className="text-xs text-text-tertiary mb-6">
                 Create voiceover direction, music cues, SFX notes, color palette, and visual style guidance.
               </p>
               <Button onClick={handleGenerate} loading={generating} className="gap-2">
                 <Sparkles className="w-4 h-4" />
-                Generate Plan
+                Generate Brief
               </Button>
             </>
           ) : (
@@ -65,7 +65,7 @@ export function ProductionPlanView({ projectId, plan, hasScreenplay }: Productio
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-display font-semibold text-text-primary">Production Plan</h1>
+        <h1 className="text-2xl font-display font-semibold text-text-primary">Creative Brief</h1>
         <Button variant="secondary" onClick={handleGenerate} loading={generating} size="sm" className="gap-2">
           <Sparkles className="w-3.5 h-3.5" />
           Regenerate

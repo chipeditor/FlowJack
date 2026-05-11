@@ -1,6 +1,6 @@
 export type ProjectStatus = 'draft' | 'in_progress' | 'complete' | 'archived'
 export type UserTier = 'free' | 'creator' | 'pro'
-export type GenerationType = 'logline' | 'screenplay' | 'scenes' | 'shots' | 'storyboard' | 'production_plan'
+export type GenerationType = 'logline' | 'screenplay' | 'scenes' | 'shots' | 'storyboard' | 'creative_brief' | 'production_plan'
 export type AIProvider = 'anthropic' | 'openai'
 export type VideoProvider = 'kling' | 'runway' | 'luma' | 'pika' | 'fal'
 export type RenderStatus = 'queued' | 'processing' | 'complete' | 'failed' | 'cancelled'
@@ -138,6 +138,68 @@ export interface SFXNote {
   timestamp_description: string
   effect: string
   intensity: string
+}
+
+export type BudgetTier = 'micro' | 'low' | 'mid'
+
+export interface ShootDay {
+  day_number: number
+  location: string
+  interior_exterior: InteriorExterior
+  time_of_day: string
+  scenes: number[]
+  estimated_hours: number
+  notes: string | null
+}
+
+export interface CallSheet {
+  day_number: number
+  location: string
+  call_time: string
+  scenes: number[]
+  cast_needed: string[]
+  equipment_notes: string | null
+  notes: string | null
+}
+
+export interface CastBreakdownEntry {
+  character: string
+  scene_count: number
+  scenes: number[]
+  shoot_days: number[]
+  notes: string | null
+}
+
+export interface LocationEntry {
+  location: string
+  interior_exterior: InteriorExterior
+  time_of_day: string[]
+  scene_count: number
+  scenes: number[]
+  notes: string | null
+}
+
+export interface EquipmentEntry {
+  category: string
+  item: string
+  scenes_needed: number[]
+  notes: string | null
+}
+
+export interface ShootPlan {
+  id: string
+  project_id: string
+  shoot_schedule: ShootDay[]
+  call_sheets: CallSheet[]
+  cast_breakdown: CastBreakdownEntry[]
+  location_list: LocationEntry[]
+  equipment_list: EquipmentEntry[]
+  budget_tier: BudgetTier
+  budget_notes: string | null
+  total_shoot_days: number
+  notes: string | null
+  created_at: string
+  updated_at: string
 }
 
 export interface Render {

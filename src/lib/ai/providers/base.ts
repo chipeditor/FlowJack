@@ -1,12 +1,12 @@
 import {
-  VideoProvider,
+  VideoProviderAdapter,
   VideoGenerationRequest,
   VideoGenerationResult,
   CostEstimate,
   ProviderCapabilities,
 } from '@/lib/types/video-provider'
 
-export abstract class BaseVideoProvider implements VideoProvider {
+export abstract class BaseVideoProvider implements VideoProviderAdapter {
   abstract readonly name: string
   abstract readonly id: string
 

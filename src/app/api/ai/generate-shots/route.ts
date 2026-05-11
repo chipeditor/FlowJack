@@ -3,7 +3,10 @@ import { createServerSupabaseClient } from '@/lib/db/supabase-server'
 import { generate } from '@/lib/ai/generate'
 import { buildShotListPrompt } from '@/lib/ai/prompts/shots'
 
+export const maxDuration = 120
+
 export async function POST(request: NextRequest) {
+  try {
   const supabase = await createServerSupabaseClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -76,4 +79,8 @@ export async function POST(request: NextRequest) {
   })
 
   return NextResponse.json({ shots })
+  } catch (error) {
+    console.error('Shot generation error:', error)
+    return NextResponse.json({ error: 'Generation failed' }, { status: 500 })
+  }
 }

@@ -7,7 +7,7 @@ export default async function ScreenplayPage({ params }: { params: Promise<{ id:
 
   const { data: project } = await supabase
     .from('projects')
-    .select('id, title, logline, genre, tone, duration_target')
+    .select('id, title, logline, genre, tone, duration_target, metadata')
     .eq('id', id)
     .single()
 

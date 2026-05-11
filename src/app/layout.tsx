@@ -29,8 +29,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="dark">
-      <body className={`${inter.variable} ${jetbrainsMono.variable} ${outfit.variable} font-sans`}>
-        {children}
+      <body className={`${inter.variable} ${jetbrainsMono.variable} ${outfit.variable} font-sans min-h-screen flex flex-col`}>
+        <div className="flex-1">{children}</div>
+        <footer className="py-4 text-center text-xs text-text-tertiary">
+          By Chip Eberhart
+        </footer>
       </body>
     </html>
   )

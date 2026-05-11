@@ -3,7 +3,10 @@ import { createServerSupabaseClient } from '@/lib/db/supabase-server'
 import { generate } from '@/lib/ai/generate'
 import { buildLoglinePrompt } from '@/lib/ai/prompts/logline'
 
+export const maxDuration = 60
+
 export async function POST(request: NextRequest) {
+  try {
   const supabase = await createServerSupabaseClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -39,4 +42,9 @@ export async function POST(request: NextRequest) {
   })
 
   return NextResponse.json({ logline: result.content })
+  } catch (error) {
+    console.error('Logline generation error:', error)
+    const message = error instanceof Error ? error.message : 'Generation failed'
+    return NextResponse.json({ error: message }, { status: 500 })
+  }
 }

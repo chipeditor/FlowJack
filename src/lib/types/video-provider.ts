@@ -39,7 +39,7 @@ export interface ProviderCapabilities {
   averageGenerationTime: number // seconds
 }
 
-export interface VideoProvider {
+export interface VideoProviderAdapter {
   readonly name: string
   readonly id: string
 

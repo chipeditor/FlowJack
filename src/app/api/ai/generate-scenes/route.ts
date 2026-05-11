@@ -3,7 +3,10 @@ import { createServerSupabaseClient } from '@/lib/db/supabase-server'
 import { generate } from '@/lib/ai/generate'
 import { buildSceneBreakdownPrompt } from '@/lib/ai/prompts/scenes'
 
+export const maxDuration = 120
+
 export async function POST(request: NextRequest) {
+  try {
   const supabase = await createServerSupabaseClient()
   const { data: { user } } = await supabase.auth.getUser()
 
@@ -69,4 +72,8 @@ export async function POST(request: NextRequest) {
   })
 
   return NextResponse.json({ scenes })
+  } catch (error) {
+    console.error('Scene generation error:', error)
+    return NextResponse.json({ error: 'Generation failed' }, { status: 500 })
+  }
 }

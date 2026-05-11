@@ -11,6 +11,7 @@ import {
   Camera,
   Image,
   ClipboardList,
+  Palette,
   Settings,
   Clapperboard,
 } from 'lucide-react'
@@ -22,7 +23,8 @@ const getProjectNav = (projectId: string) => [
   { name: 'Scenes', href: `/project/${projectId}/scenes`, icon: Layers },
   { name: 'Shot List', href: `/project/${projectId}/shots`, icon: Camera },
   { name: 'Storyboard', href: `/project/${projectId}/storyboard`, icon: Image },
-  { name: 'Production Plan', href: `/project/${projectId}/production-plan`, icon: ClipboardList },
+  { name: 'Creative Brief', href: `/project/${projectId}/production-plan`, icon: Palette },
+  { name: 'Production Plan', href: `/project/${projectId}/shoot-plan`, icon: ClipboardList },
   { name: 'Settings', href: `/project/${projectId}/settings`, icon: Settings },
 ]
 

@@ -1,13 +1,13 @@
-import { VideoProvider } from '@/lib/types/video-provider'
+import { VideoProviderAdapter } from '@/lib/types/video-provider'
 import { KlingProvider } from './kling'
 
-export type VideoProviderID = 'kling' | 'runway' | 'luma' | 'pika' | 'fal'
+export type VideoProviderAdapterID = 'kling' | 'runway' | 'luma' | 'pika' | 'fal'
 
-const providers: Record<string, VideoProvider> = {
+const providers: Record<string, VideoProviderAdapter> = {
   kling: new KlingProvider(),
 }
 
-export function getVideoProvider(id: VideoProviderID): VideoProvider {
+export function getVideoProviderAdapter(id: VideoProviderAdapterID): VideoProviderAdapter {
   const provider = providers[id]
   if (!provider) {
     throw new Error(`Video provider "${id}" is not available.`)
@@ -15,6 +15,6 @@ export function getVideoProvider(id: VideoProviderID): VideoProvider {
   return provider
 }
 
-export function getAvailableProviders(): VideoProvider[] {
+export function getAvailableProviders(): VideoProviderAdapter[] {
   return Object.values(providers)
 }

@@ -11,9 +11,10 @@ import { X, Sparkles } from 'lucide-react'
 const GENRES = ['Drama', 'Thriller', 'Sci-Fi', 'Horror', 'Comedy', 'Romance', 'Action', 'Documentary', 'Experimental']
 const TONES = ['Dark', 'Uplifting', 'Melancholic', 'Tense', 'Whimsical', 'Gritty', 'Ethereal', 'Intimate']
 const DURATIONS = [
-  { value: 'short', label: '2-3 min' },
-  { value: 'medium', label: '5-8 min' },
-  { value: 'feature', label: '10-15 min' },
+  { value: 'short', label: '1-5 min' },
+  { value: 'medium', label: '5-15 min' },
+  { value: 'standard', label: '15-45 min' },
+  { value: 'feature', label: '45-120 min' },
 ]
 
 interface NewProjectModalProps {
