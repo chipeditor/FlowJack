@@ -10,7 +10,6 @@ import { Clapperboard } from 'lucide-react'
 
 export default function SignupPage() {
   const router = useRouter()
-  const supabase = createClient()
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -22,6 +21,7 @@ export default function SignupPage() {
     setLoading(true)
     setError('')
 
+    const supabase = createClient()
     const { error } = await supabase.auth.signUp({
       email,
       password,
