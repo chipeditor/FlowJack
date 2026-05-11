@@ -15,6 +15,7 @@ import {
   Settings,
   Clapperboard,
   Users,
+  FileSpreadsheet,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 
@@ -27,6 +28,7 @@ const getProjectNav = (projectId: string) => [
   { name: 'Creative Brief', href: `/project/${projectId}/production-plan`, icon: Palette },
   { name: 'Cast & Crew', href: `/project/${projectId}/crew`, icon: Users },
   { name: 'Production Plan', href: `/project/${projectId}/shoot-plan`, icon: ClipboardList },
+  { name: 'Call Sheets', href: `/project/${projectId}/call-sheets`, icon: FileSpreadsheet },
   { name: 'Settings', href: `/project/${projectId}/settings`, icon: Settings },
 ]
 

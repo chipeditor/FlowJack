@@ -152,7 +152,72 @@ export interface ShootDay {
   notes: string | null
 }
 
+export type CastStatus = 'S' | 'W' | 'F' | 'H'
+
+export interface CallSheetScene {
+  scene_number: number
+  interior_exterior: string
+  set_description: string
+  time_of_day: string
+  page_count: string | null
+  characters: string[]
+  location: string
+  shot_count: number
+  estimated_duration_minutes: number | null
+  sort_order: number
+}
+
+export interface CallSheetCastEntry {
+  character_name: string
+  actor_name: string | null
+  status: CastStatus | null
+  call_time: string | null
+  makeup_time: string | null
+  on_set_time: string | null
+  scenes_today: number[]
+  notes: string | null
+}
+
+export interface CallSheetLocation {
+  location_name: string
+  address: string | null
+  interior_exterior: string
+  parking_notes: string | null
+  notes: string | null
+  sort_order: number
+}
+
+export interface DepartmentNote {
+  department: string
+  note: string
+}
+
 export interface CallSheet {
+  id: string
+  project_id: string
+  shoot_plan_id: string
+  day_number: number
+  date: string | null
+  crew_call: string
+  shooting_call: string | null
+  sunrise: string | null
+  sunset: string | null
+  weather_forecast: string | null
+  locations: CallSheetLocation[]
+  scenes: CallSheetScene[]
+  cast_list: CallSheetCastEntry[]
+  department_notes: DepartmentNote[]
+  important_notes: string | null
+  breakfast_time: string | null
+  lunch_time: string | null
+  nearest_hospital: string | null
+  advance_schedule_note: string | null
+  notes: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface CallSheetStub {
   day_number: number
   location: string
   call_time: string
@@ -190,7 +255,7 @@ export interface ShootPlan {
   id: string
   project_id: string
   shoot_schedule: ShootDay[]
-  call_sheets: CallSheet[]
+  call_sheets: CallSheetStub[]
   cast_breakdown: CastBreakdownEntry[]
   location_list: LocationEntry[]
   equipment_list: EquipmentEntry[]

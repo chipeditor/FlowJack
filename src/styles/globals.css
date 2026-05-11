@@ -58,3 +58,24 @@
     display: none;
   }
 }
+
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+    font-size: 9pt;
+  }
+  .print\:hidden, nav, aside, header {
+    display: none !important;
+  }
+  .panel {
+    border: 1px solid #ccc !important;
+    border-radius: 4px !important;
+    background: white !important;
+    box-shadow: none !important;
+    break-inside: avoid;
+  }
+  table { font-size: 8pt; }
+  a { color: inherit !important; text-decoration: none !important; }
+  @page { margin: 0.5in; size: letter; }
+}
