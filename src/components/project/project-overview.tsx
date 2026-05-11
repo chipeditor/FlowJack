@@ -31,7 +31,9 @@ export function ProjectOverview({ project, hasScreenplay, sceneCount, shotCount,
   const router = useRouter()
   const [generating, setGenerating] = useState(false)
 
-  const isScreenplayLocked = !!(project.metadata as Record<string, unknown>)?.screenplay_locked
+  const metadata = project.metadata as Record<string, unknown>
+  const isScreenplayLocked = !!metadata?.screenplay_locked
+  const isImported = metadata?.source === 'imported'
 
   const pipeline = [
     { name: 'Logline', done: !!project.logline, icon: Sparkles, href: '' },
@@ -92,6 +94,11 @@ export function ProjectOverview({ project, hasScreenplay, sceneCount, shotCount,
               <p className="mt-2 text-xs text-red-400">{error}</p>
             )}
           </div>
+        )}
+        {!project.logline && !project.idea_input && isImported && (
+          <p className="text-sm text-text-tertiary mt-2 italic animate-pulse">
+            Generating logline from screenplay...
+          </p>
         )}
       </div>
 
