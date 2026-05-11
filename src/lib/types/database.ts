@@ -202,6 +202,49 @@ export interface ShootPlan {
   updated_at: string
 }
 
+export type CrewDepartment =
+  | 'production'
+  | 'direction'
+  | 'camera'
+  | 'sound'
+  | 'lighting'
+  | 'grip'
+  | 'art'
+  | 'hmu_wardrobe'
+  | 'post'
+  | 'other'
+
+export const CREW_DEPARTMENTS: { value: CrewDepartment; label: string }[] = [
+  { value: 'production', label: 'Production' },
+  { value: 'direction', label: 'Direction' },
+  { value: 'camera', label: 'Camera' },
+  { value: 'sound', label: 'Sound' },
+  { value: 'lighting', label: 'Lighting' },
+  { value: 'grip', label: 'Grip' },
+  { value: 'art', label: 'Art' },
+  { value: 'hmu_wardrobe', label: 'Hair/Makeup/Wardrobe' },
+  { value: 'post', label: 'Post Production' },
+  { value: 'other', label: 'Other' },
+]
+
+export interface CrewMember {
+  id: string
+  project_id: string
+  name: string
+  role: string
+  department: CrewDepartment
+  phone: string | null
+  email: string | null
+  is_cast: boolean
+  character_name: string | null
+  is_key_contact: boolean
+  daily_rate: number | null
+  notes: string | null
+  sort_order: number
+  created_at: string
+  updated_at: string
+}
+
 export interface Render {
   id: string
   shot_id: string | null
