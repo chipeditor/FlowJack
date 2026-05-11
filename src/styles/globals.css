@@ -1,0 +1,60 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-inter: 'Inter', system-ui, sans-serif;
+    --font-jetbrains: 'JetBrains Mono', monospace;
+    --font-outfit: 'Outfit', system-ui, sans-serif;
+  }
+
+  body {
+    @apply bg-canvas text-text-primary antialiased;
+  }
+
+  ::selection {
+    @apply bg-accent/30 text-text-primary;
+  }
+
+  * {
+    @apply border-surface-border;
+  }
+}
+
+@layer components {
+  .glass {
+    @apply bg-surface/80 backdrop-blur-xl border border-surface-border;
+  }
+
+  .glass-elevated {
+    @apply bg-canvas-elevated/90 backdrop-blur-xl border border-surface-border shadow-2xl;
+  }
+
+  .glow-accent {
+    box-shadow: 0 0 20px theme('colors.accent.DEFAULT / 15%'),
+                0 0 60px theme('colors.accent.DEFAULT / 5%');
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-accent to-accent-hover bg-clip-text text-transparent;
+  }
+
+  .panel {
+    @apply bg-canvas-subtle border border-surface-border rounded-2xl;
+  }
+
+  .panel-elevated {
+    @apply bg-canvas-muted border border-surface-border rounded-2xl shadow-lg;
+  }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+}
