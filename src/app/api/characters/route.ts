@@ -77,6 +77,7 @@ export async function PUT(request: NextRequest) {
     const allowed = [
       'name', 'description', 'physical_traits', 'wardrobe',
       'reference_image_url', 'reference_image_seed', 'reference_source',
+      'voice_id', 'voice_name',
       'actor_id', 'sort_order',
     ]
     for (const key of allowed) {

@@ -18,6 +18,7 @@ import {
   Check,
   Loader2,
   ImageIcon,
+  Sparkles,
 } from 'lucide-react'
 
 interface CharactersViewProps {
@@ -114,11 +115,37 @@ export function CharactersView({ projectId, initialCharacters }: CharactersViewP
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  // Extraction state
+  const [extracting, setExtracting] = useState(false)
+
   // Portrait generation state
   const [portraitCharId, setPortraitCharId] = useState<string | null>(null)
   const [portraits, setPortraits] = useState<PortraitOption[]>([])
   const [generatingPortraits, setGeneratingPortraits] = useState(false)
   const [acceptingPortrait, setAcceptingPortrait] = useState(false)
+
+  async function handleExtractFromScreenplay() {
+    setExtracting(true)
+    setError(null)
+    try {
+      const res = await fetch('/api/ai/extract-characters', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ projectId }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error)
+      router.refresh()
+      // Reload characters
+      const listRes = await fetch(`/api/characters?projectId=${projectId}`)
+      const listData = await listRes.json()
+      if (listData.characters) setCharacters(listData.characters)
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Extraction failed')
+    } finally {
+      setExtracting(false)
+    }
+  }
 
   function openAdd() {
     setForm(emptyForm)
@@ -264,10 +291,21 @@ export function CharactersView({ projectId, initialCharacters }: CharactersViewP
           <h2 className="text-xl font-display font-semibold text-text-primary">Characters</h2>
           <Badge>{characters.length}</Badge>
         </div>
-        <Button onClick={openAdd} size="sm">
-          <Plus className="w-4 h-4" />
-          Add Character
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={handleExtractFromScreenplay}
+            loading={extracting}
+          >
+            <Sparkles className="w-4 h-4" />
+            Extract from Screenplay
+          </Button>
+          <Button onClick={openAdd} size="sm">
+            <Plus className="w-4 h-4" />
+            Add Character
+          </Button>
+        </div>
       </div>
 
       {error && (
@@ -445,12 +483,18 @@ export function CharactersView({ projectId, initialCharacters }: CharactersViewP
           <Users className="w-12 h-12 mx-auto text-text-tertiary mb-4" />
           <p className="text-text-secondary mb-2">No characters yet</p>
           <p className="text-sm text-text-tertiary mb-6">
-            Add characters with physical descriptions to maintain visual consistency across your storyboard.
+            Extract characters from your screenplay or add them manually to maintain visual consistency across your storyboard.
           </p>
-          <Button onClick={openAdd}>
-            <Plus className="w-4 h-4" />
-            Add Your First Character
-          </Button>
+          <div className="flex items-center justify-center gap-3">
+            <Button onClick={handleExtractFromScreenplay} loading={extracting}>
+              <Sparkles className="w-4 h-4" />
+              Extract from Screenplay
+            </Button>
+            <Button variant="secondary" onClick={openAdd}>
+              <Plus className="w-4 h-4" />
+              Add Manually
+            </Button>
+          </div>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

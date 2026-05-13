@@ -49,6 +49,8 @@ export interface Character {
   reference_image_url: string | null
   reference_image_seed: number | null
   reference_source: ReferenceSource | null
+  voice_id: string | null
+  voice_name: string | null
   actor_id: string | null
   sort_order: number
   created_at: string
