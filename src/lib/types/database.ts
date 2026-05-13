@@ -1,11 +1,85 @@
 export type ProjectStatus = 'draft' | 'in_progress' | 'complete' | 'archived'
 export type UserTier = 'free' | 'creator' | 'pro'
-export type GenerationType = 'logline' | 'screenplay' | 'scenes' | 'shots' | 'storyboard' | 'creative_brief' | 'production_plan'
+export type GenerationType = 'logline' | 'screenplay' | 'scenes' | 'shots' | 'storyboard' | 'creative_brief' | 'production_plan' | 'script_review'
 export type AIProvider = 'anthropic' | 'openai'
 export type VideoProvider = 'kling' | 'runway' | 'luma' | 'pika' | 'fal'
 export type RenderStatus = 'queued' | 'processing' | 'complete' | 'failed' | 'cancelled'
 export type StoryboardStatus = 'pending' | 'generating' | 'complete' | 'failed'
 export type InteriorExterior = 'INT' | 'EXT' | 'INT/EXT'
+
+// Collaboration
+export type ProjectRole = 'owner' | 'editor' | 'contributor' | 'viewer'
+export type InviteStatus = 'pending' | 'accepted' | 'declined' | 'revoked' | 'expired'
+export type ModuleSlug =
+  | 'screenplay'
+  | 'scenes'
+  | 'shots'
+  | 'storyboard'
+  | 'creative_brief'
+  | 'shoot_plan'
+  | 'crew'
+  | 'characters'
+  | 'call_sheets'
+  | 'settings'
+
+// Characters
+export type ReferenceSource = 'uploaded' | 'generated'
+
+export interface PhysicalTraits {
+  hair_color?: string
+  hair_style?: string
+  eye_color?: string
+  skin_tone?: string
+  age_range?: string
+  build?: string
+  height?: string
+  facial_hair?: string
+  distinguishing_features?: string
+  era?: string
+  archetype?: string
+}
+
+export interface Character {
+  id: string
+  project_id: string
+  name: string
+  description: string | null
+  physical_traits: PhysicalTraits
+  wardrobe: string | null
+  reference_image_url: string | null
+  reference_image_seed: number | null
+  reference_source: ReferenceSource | null
+  actor_id: string | null
+  sort_order: number
+  created_at: string
+  updated_at: string
+}
+
+export interface ProjectMember {
+  id: string
+  project_id: string
+  user_id: string
+  role: Exclude<ProjectRole, 'owner'>
+  permissions: ModuleSlug[]
+  invited_by: string | null
+  joined_at: string
+  updated_at: string
+  profile?: Pick<Profile, 'id' | 'display_name' | 'avatar_url'>
+}
+
+export interface ProjectInvite {
+  id: string
+  project_id: string
+  invited_email: string
+  role: Exclude<ProjectRole, 'owner'>
+  permissions: ModuleSlug[]
+  token: string
+  invited_by: string
+  status: InviteStatus
+  expires_at: string
+  created_at: string
+  accepted_at: string | null
+}
 
 export interface Profile {
   id: string
@@ -302,6 +376,7 @@ export interface CrewMember {
   email: string | null
   is_cast: boolean
   character_name: string | null
+  character_description: string | null
   is_key_contact: boolean
   daily_rate: number | null
   notes: string | null

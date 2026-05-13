@@ -16,6 +16,8 @@ For each scene, extract and generate:
 9. estimated_duration_seconds (realistic estimate)
 10. notes (any production considerations)
 
+Additionally, extract ALL characters from the entire screenplay. For each character, extract any physical traits, wardrobe details, age, or personality descriptors mentioned ANYWHERE in the screenplay (action lines, parentheticals, character introductions). Only include traits that are explicitly stated or clearly implied — do NOT invent or assume traits that aren't in the text. Consolidate name variations (e.g. "SARAH", "Sarah", "SARAH CHEN") into a single canonical name.
+
 Respond in JSON format:
 {
   "scenes": [
@@ -31,8 +33,31 @@ Respond in JSON format:
       "estimated_duration_seconds": 45,
       "notes": "..."
     }
+  ],
+  "characters": [
+    {
+      "name": "Sarah Chen",
+      "description": "Brief character summary if evident from screenplay",
+      "physical_traits": {
+        "hair_color": null,
+        "hair_style": null,
+        "eye_color": null,
+        "skin_tone": null,
+        "age_range": "30s",
+        "build": null,
+        "height": null,
+        "facial_hair": null,
+        "distinguishing_features": "scar on left cheek",
+        "era": null,
+        "archetype": null
+      },
+      "wardrobe": "leather jacket, worn boots",
+      "scenes": [1, 3, 5]
+    }
   ]
 }
+
+For physical_traits, use null for any trait not mentioned in the screenplay. The "scenes" array on each character should list the scene_numbers where they appear.
 
 Respond with ONLY valid JSON.`
 }

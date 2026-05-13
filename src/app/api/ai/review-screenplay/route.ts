@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/db/supabase-server'
 import { generate } from '@/lib/ai/generate'
-import { buildLoglineFromScriptPrompt } from '@/lib/ai/prompts/logline-from-script'
+import { buildScriptReviewPrompt, ScriptSuggestion } from '@/lib/ai/prompts/script-review'
+import { randomUUID } from 'crypto'
 import { requireAIPermission, handleAuthError } from '@/lib/auth/check-permission'
 
 export const maxDuration = 60
@@ -27,35 +28,39 @@ export async function POST(request: NextRequest) {
 
     if (!script) return NextResponse.json({ error: 'No screenplay found' }, { status: 400 })
 
-    const prompt = buildLoglineFromScriptPrompt(script.content, project?.genre)
-    const result = await generate({ type: 'logline', prompt })
+    const prompt = buildScriptReviewPrompt(script.content, project?.genre)
+    const result = await generate({ type: 'script_review', prompt, structured: true })
 
-    const logline = result.content.trim().replace(/^["']|["']$/g, '')
-
-    await supabase
-      .from('projects')
-      .update({ logline })
-      .eq('id', projectId)
+    let suggestions: ScriptSuggestion[] = []
+    try {
+      const parsed = JSON.parse(result.content)
+      suggestions = (parsed.suggestions || []).map((s: Omit<ScriptSuggestion, 'id'>) => ({
+        ...s,
+        id: randomUUID(),
+      }))
+    } catch {
+      return NextResponse.json({ error: 'Failed to parse AI suggestions' }, { status: 500 })
+    }
 
     await supabase.from('ai_generations').insert({
       project_id: projectId,
       user_id: userId,
-      generation_type: 'logline',
+      generation_type: 'script_review',
       provider: result.provider,
       model: result.model,
-      input_prompt: prompt,
-      output_content: logline,
+      input_prompt: prompt.slice(0, 5000),
+      output_content: result.content,
       tokens_used: result.tokensUsed,
       duration_ms: result.durationMs,
-      accepted: true,
+      accepted: false,
     })
 
-    return NextResponse.json({ logline })
+    return NextResponse.json({ suggestions })
   } catch (error) {
-    console.error('Logline from script error:', error)
+    console.error('Script review error:', error)
     const authResp = handleAuthError(error)
     if (authResp) return authResp
-    const message = error instanceof Error ? error.message : 'Generation failed'
+    const message = error instanceof Error ? error.message : 'Review failed'
     return NextResponse.json({ error: message }, { status: 500 })
   }
 }

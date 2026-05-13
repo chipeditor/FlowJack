@@ -32,6 +32,7 @@ interface MemberForm {
   email: string
   is_cast: boolean
   character_name: string
+  character_description: string
   is_key_contact: boolean
   daily_rate: string
   notes: string
@@ -45,6 +46,7 @@ const emptyForm: MemberForm = {
   email: '',
   is_cast: false,
   character_name: '',
+  character_description: '',
   is_key_contact: false,
   daily_rate: '',
   notes: '',
@@ -85,6 +87,7 @@ export function CrewRosterView({ projectId, initialMembers, characters }: CrewRo
       email: member.email || '',
       is_cast: member.is_cast,
       character_name: member.character_name || '',
+      character_description: member.character_description || '',
       is_key_contact: member.is_key_contact,
       daily_rate: member.daily_rate ? String(member.daily_rate) : '',
       notes: member.notes || '',
@@ -116,6 +119,7 @@ export function CrewRosterView({ projectId, initialMembers, characters }: CrewRo
         phone: form.phone || null,
         email: form.email || null,
         character_name: form.character_name || null,
+        character_description: form.character_description || null,
         notes: form.notes || null,
       }
 
@@ -295,29 +299,44 @@ export function CrewRosterView({ projectId, initialMembers, characters }: CrewRo
               />
 
               {form.is_cast && (
-                <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-text-secondary uppercase tracking-wider">
-                    Character
-                  </label>
-                  <select
-                    value={form.character_name}
-                    onChange={(e) => setForm({ ...form, character_name: e.target.value })}
-                    className="flex h-11 w-full rounded-xl bg-surface border border-surface-border px-4 text-sm text-text-primary transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent/50"
-                  >
-                    <option value="">Select character...</option>
-                    {characters.map((c) => (
-                      <option key={c} value={c}>{c}</option>
-                    ))}
-                    <option value="__custom">Other (type below)</option>
-                  </select>
-                  {form.character_name === '__custom' && (
-                    <Input
-                      placeholder="Character name"
-                      value=""
+                <>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-text-secondary uppercase tracking-wider">
+                      Character
+                    </label>
+                    <select
+                      value={form.character_name}
                       onChange={(e) => setForm({ ...form, character_name: e.target.value })}
+                      className="flex h-11 w-full rounded-xl bg-surface border border-surface-border px-4 text-sm text-text-primary transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent/50"
+                    >
+                      <option value="">Select character...</option>
+                      {characters.map((c) => (
+                        <option key={c} value={c}>{c}</option>
+                      ))}
+                      <option value="__custom">Other (type below)</option>
+                    </select>
+                    {form.character_name === '__custom' && (
+                      <Input
+                        placeholder="Character name"
+                        value=""
+                        onChange={(e) => setForm({ ...form, character_name: e.target.value })}
+                      />
+                    )}
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-medium text-text-secondary uppercase tracking-wider">
+                      Appearance (for storyboard consistency)
+                    </label>
+                    <textarea
+                      placeholder="e.g. young woman, mid-20s, auburn hair past shoulders, green eyes, light freckles, cream knit sweater"
+                      value={form.character_description}
+                      onChange={(e) => setForm({ ...form, character_description: e.target.value })}
+                      rows={2}
+                      className="flex w-full rounded-xl bg-surface border border-surface-border px-4 py-3 text-sm text-text-primary transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-accent/30 focus:border-accent/50 resize-none"
                     />
-                  )}
-                </div>
+                    <p className="text-2xs text-text-tertiary">Physical details used to keep this character looking consistent across all storyboard frames.</p>
+                  </div>
+                </>
               )}
 
               <Input

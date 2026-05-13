@@ -6,13 +6,24 @@ import { Project } from '@/lib/types'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { NewProjectModal } from '@/components/dashboard/new-project-modal'
-import { Plus, Film, Clock, Clapperboard } from 'lucide-react'
+import { Plus, Film, Clock, Clapperboard, Users } from 'lucide-react'
+
+interface SharedProject {
+  id: string
+  title: string
+  logline?: string | null
+  genre?: string | null
+  status: string
+  updated_at: string
+  memberRole: string
+}
 
 interface DashboardContentProps {
   projects: Project[]
+  sharedProjects?: SharedProject[]
 }
 
-export function DashboardContent({ projects }: DashboardContentProps) {
+export function DashboardContent({ projects, sharedProjects = [] }: DashboardContentProps) {
   const [showNewProject, setShowNewProject] = useState(false)
 
   return (
@@ -77,6 +88,44 @@ export function DashboardContent({ projects }: DashboardContentProps) {
               </div>
             </Link>
           ))}
+        </div>
+      )}
+
+      {sharedProjects.length > 0 && (
+        <div className="space-y-4 pt-4">
+          <div className="flex items-center gap-2">
+            <Users className="w-4 h-4 text-text-tertiary" />
+            <h2 className="text-lg font-display font-semibold text-text-primary">Shared with Me</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {sharedProjects.map((sp) => (
+              <Link key={sp.id} href={`/project/${sp.id}`}>
+                <div className="panel p-5 hover:border-accent/30 transition-all duration-200 cursor-pointer group">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-center gap-2">
+                      <Film className="w-4 h-4 text-accent" />
+                      <h3 className="font-medium text-text-primary group-hover:text-accent transition-colors">
+                        {sp.title}
+                      </h3>
+                    </div>
+                    <Badge variant="accent">{sp.memberRole}</Badge>
+                  </div>
+                  {sp.logline && (
+                    <p className="text-sm text-text-secondary line-clamp-2 mb-3">
+                      {sp.logline}
+                    </p>
+                  )}
+                  <div className="flex items-center gap-4 text-2xs text-text-tertiary">
+                    {sp.genre && <span>{sp.genre}</span>}
+                    <span className="flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      {new Date(sp.updated_at).toLocaleDateString()}
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
       )}
 

@@ -2,19 +2,15 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/db/supabase-server'
 import { generate } from '@/lib/ai/generate'
 import { buildShotListPrompt } from '@/lib/ai/prompts/shots'
+import { requireAIPermission, handleAuthError } from '@/lib/auth/check-permission'
 
 export const maxDuration = 120
 
 export async function POST(request: NextRequest) {
   try {
   const supabase = await createServerSupabaseClient()
-  const { data: { user } } = await supabase.auth.getUser()
-
-  if (!user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
   const { projectId, sceneId } = await request.json()
+  const { userId } = await requireAIPermission(supabase, projectId)
 
   const { data: scene } = await supabase
     .from('scenes')
@@ -67,7 +63,7 @@ export async function POST(request: NextRequest) {
 
   await supabase.from('ai_generations').insert({
     project_id: projectId,
-    user_id: user.id,
+    user_id: userId,
     generation_type: 'shots',
     provider: result.provider,
     model: result.model,
@@ -81,6 +77,8 @@ export async function POST(request: NextRequest) {
   return NextResponse.json({ shots })
   } catch (error) {
     console.error('Shot generation error:', error)
+    const authResp = handleAuthError(error)
+    if (authResp) return authResp
     return NextResponse.json({ error: 'Generation failed' }, { status: 500 })
   }
 }

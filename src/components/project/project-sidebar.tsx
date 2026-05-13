@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils/cn'
-import { Project } from '@/lib/types'
+import { Project, ProjectRole } from '@/lib/types'
 import {
   ArrowLeft,
   FileText,
@@ -15,9 +15,11 @@ import {
   Settings,
   Clapperboard,
   Users,
+  UserCircle,
   FileSpreadsheet,
 } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { useProjectRole } from '@/lib/hooks/use-project-role'
 
 const getProjectNav = (projectId: string) => [
   { name: 'Overview', href: `/project/${projectId}`, icon: Clapperboard },
@@ -26,6 +28,7 @@ const getProjectNav = (projectId: string) => [
   { name: 'Shot List', href: `/project/${projectId}/shots`, icon: Camera },
   { name: 'Storyboard', href: `/project/${projectId}/storyboard`, icon: Image },
   { name: 'Creative Brief', href: `/project/${projectId}/production-plan`, icon: Palette },
+  { name: 'Characters', href: `/project/${projectId}/characters`, icon: UserCircle },
   { name: 'Cast & Crew', href: `/project/${projectId}/crew`, icon: Users },
   { name: 'Production Plan', href: `/project/${projectId}/shoot-plan`, icon: ClipboardList },
   { name: 'Call Sheets', href: `/project/${projectId}/call-sheets`, icon: FileSpreadsheet },
@@ -39,6 +42,7 @@ interface ProjectSidebarProps {
 export function ProjectSidebar({ project }: ProjectSidebarProps) {
   const pathname = usePathname()
   const nav = getProjectNav(project.id)
+  const { role, loading: roleLoading } = useProjectRole(project.id)
 
   return (
     <aside className="fixed left-0 top-0 h-full w-[260px] bg-canvas-subtle border-r border-surface-border flex flex-col z-40">
@@ -54,6 +58,9 @@ export function ProjectSidebar({ project }: ProjectSidebarProps) {
         <div className="flex items-center gap-2 mt-1.5">
           <Badge>{project.status}</Badge>
           {project.genre && <Badge variant="accent">{project.genre}</Badge>}
+          {!roleLoading && role !== 'owner' && (
+            <Badge variant="accent">{role}</Badge>
+          )}
         </div>
       </div>
 

@@ -124,7 +124,7 @@ export function ProjectSettings({ project }: ProjectSettingsProps) {
   }
 
   return (
-    <div className="space-y-8 max-w-2xl">
+    <div className="space-y-8">
       <h1 className="text-2xl font-display font-semibold text-text-primary">Project Settings</h1>
 
       <div className="space-y-5">

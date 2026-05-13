@@ -13,5 +13,19 @@ export default async function DashboardPage() {
     .order('updated_at', { ascending: false })
     .limit(10)
 
-  return <DashboardContent projects={projects || []} />
+  const { data: memberships } = await supabase
+    .from('project_members')
+    .select('role, project:projects(id, title, logline, genre, status, updated_at)')
+    .eq('user_id', user?.id ?? '')
+    .order('joined_at', { ascending: false })
+    .limit(10)
+
+  const sharedProjects = (memberships || [])
+    .filter(m => m.project)
+    .map(m => {
+      const p = m.project as unknown as { id: string; title: string; logline: string | null; genre: string | null; status: string; updated_at: string }
+      return { ...p, memberRole: m.role }
+    })
+
+  return <DashboardContent projects={projects || []} sharedProjects={sharedProjects} />
 }

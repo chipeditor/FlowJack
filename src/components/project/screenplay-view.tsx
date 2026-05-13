@@ -18,7 +18,10 @@ import {
   ArrowRight,
   History,
   CheckCircle2,
+  Search,
 } from 'lucide-react'
+import { ScriptReviewPanel } from './script-review-panel'
+import { ScriptSuggestion } from '@/lib/ai/prompts/script-review'
 
 interface ScreenplayViewProps {
   project: Pick<Project, 'id' | 'title' | 'logline' | 'genre' | 'tone' | 'duration_target' | 'metadata'>
@@ -41,18 +44,21 @@ export function ScreenplayView({ project, script }: ScreenplayViewProps) {
   const [elapsed, setElapsed] = useState(0)
   const [revisionNotes, setRevisionNotes] = useState('')
   const [showRevisionPanel, setShowRevisionPanel] = useState(false)
+  const [reviewing, setReviewing] = useState(false)
+  const [applyingReview, setApplyingReview] = useState(false)
+  const [suggestions, setSuggestions] = useState<ScriptSuggestion[] | null>(null)
 
   const isMultiPass = project.duration_target === 'standard' || project.duration_target === 'feature'
   const isLocked = !!(project.metadata as Record<string, unknown>)?.screenplay_locked
 
   useEffect(() => {
-    if (!generating && !revising) {
+    if (!generating && !revising && !reviewing) {
       setElapsed(0)
       return
     }
     const interval = setInterval(() => setElapsed((e) => e + 1), 1000)
     return () => clearInterval(interval)
-  }, [generating, revising])
+  }, [generating, revising, reviewing])
 
   async function handleGenerate() {
     setGenerating(true)
@@ -114,6 +120,51 @@ export function ScreenplayView({ project, script }: ScreenplayViewProps) {
       }
     } finally {
       setLocking(false)
+    }
+  }
+
+  async function handleReview() {
+    setReviewing(true)
+    setError(null)
+    try {
+      const res = await fetch('/api/ai/review-screenplay', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ projectId: project.id }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setError(data.error || 'Review failed')
+        return
+      }
+      setSuggestions(data.suggestions)
+    } catch {
+      setError('Network error — could not reach the server')
+    } finally {
+      setReviewing(false)
+    }
+  }
+
+  async function handleApplyReview(accepted: ScriptSuggestion[]) {
+    setApplyingReview(true)
+    setError(null)
+    try {
+      const res = await fetch('/api/ai/apply-review', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ projectId: project.id, suggestions: accepted }),
+      })
+      if (res.ok) {
+        setSuggestions(null)
+        router.refresh()
+      } else {
+        const data = await res.json().catch(() => ({}))
+        setError(data.error || 'Failed to apply changes')
+      }
+    } catch {
+      setError('Network error — could not reach the server')
+    } finally {
+      setApplyingReview(false)
     }
   }
 
@@ -212,6 +263,17 @@ export function ScreenplayView({ project, script }: ScreenplayViewProps) {
               <Button
                 variant="ghost"
                 size="sm"
+                onClick={handleReview}
+                loading={reviewing}
+                disabled={!!suggestions}
+                className="gap-1.5"
+              >
+                <Search className="w-3.5 h-3.5" />
+                {reviewing ? `Reviewing... ${formatTime(elapsed)}` : 'AI Review'}
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={() => setShowRevisionPanel(!showRevisionPanel)}
                 className="gap-1.5"
               >
@@ -305,6 +367,18 @@ export function ScreenplayView({ project, script }: ScreenplayViewProps) {
       )}
 
       {error && <ErrorMessage message={error} />}
+
+      {/* AI Review panel */}
+      {suggestions && suggestions.length > 0 && (
+        <div className="panel p-5">
+          <ScriptReviewPanel
+            suggestions={suggestions}
+            onApply={handleApplyReview}
+            onDismiss={() => setSuggestions(null)}
+            applying={applyingReview}
+          />
+        </div>
+      )}
 
       {/* Screenplay content */}
       <div className="panel p-8">
