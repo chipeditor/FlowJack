@@ -109,7 +109,7 @@ export function AdminDashboard({ projects, stats }: AdminDashboardProps) {
                     >
                       <td className="px-5 py-3">
                         <Link
-                          href={`/project/${project.id}`}
+                          href={`/admin/project/${project.id}`}
                           className="text-text-primary hover:text-accent font-medium transition-colors"
                         >
                           {project.title}
